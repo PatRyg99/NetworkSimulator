@@ -4,19 +4,15 @@ import pylab
 
 from networkx.drawing.nx_agraph import graphviz_layout
 
-def generate(file_name, capacity_range):
+def generate(file_name):
     """
     Generates graph from the given file
     """
     edges_array = np.loadtxt(file_name, delimiter=',')
     G = nx.from_numpy_array(edges_array)
     
-    capacity = np.random.random_integers(low=capacity_range[0],
-                                        high=capacity_range[1],
-                                        size=len(G.edges()))
-    
     for i, (n1,n2) in enumerate(G.edges()):
-        G[n1][n2]['capacity'] = (G.degree[n1]+G.degree[n2])
+        G[n1][n2]['capacity'] = 2*(G.degree[n1]+G.degree[n2])
         G[n1][n2]['flow'] = 0
         G[n1][n2]['color'] = "b"
 

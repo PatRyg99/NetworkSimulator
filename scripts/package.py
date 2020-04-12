@@ -11,6 +11,7 @@ class Package():
         self.time = 0
         self.current = source
         self.success = self.current == self.target
+        self.waited = False
 
     def send(self, G):
         return route.shortest_generator(G, self)

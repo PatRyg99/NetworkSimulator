@@ -14,6 +14,7 @@ def shortest_generator(G, package):
     """
     path = nx.shortest_path(G, source=package.source, target=package.target)
 
+    edges_to_remove = []
     yield_source = True
     edge_taken = False
     attempts = 0
@@ -47,7 +48,9 @@ def shortest_generator(G, package):
         # Otherwise remove edge from graph and find new shortest path
         else:
             G_copy = G.copy()
-            G_copy.remove_edge(*edge)
+            edges_to_remove.append(edge)
+            
+            G_copy.remove_edges_from(edges_to_remove)
             attempts += 1
 
             try:
@@ -67,9 +70,11 @@ def shortest_generator(G, package):
 
             except nx.NetworkXNoPath:
                 # If no new path than wait in current node
+                package.waited = True
                 pass
         
         attempts = 0
+        edges_to_remove = []
         package.time += 1
         yield package.current
 

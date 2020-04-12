@@ -2,7 +2,6 @@ import time
 from statistics import mean
 from random import shuffle
 from IPython.display import clear_output
-from IPython.display import HTML
 
 import pandas as pd
 
@@ -72,6 +71,6 @@ class Simulator():
         # Printing statistics
         print("\n"+pd.DataFrame(infallibilities, columns=["Timer","Infallibilty"]).to_string(index=False))
 
-        data = [[p.source, p.target, p.time, p.success] for p in self.packages]
-        df = pd.DataFrame(data, columns=["Source", "Target", "Time", "Success"])
+        data = [[p.source, p.target, p.time, p.success, p.waited] for p in self.packages]
+        df = pd.DataFrame(data, columns=["Source", "Target", "Time", "Success", "Waited"])
         print("\n"+df.to_string(index=False))
