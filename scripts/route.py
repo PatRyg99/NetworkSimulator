@@ -1,10 +1,22 @@
 import networkx as nx
 
 def shortest_generator(G, package):
+    """
+    Generator of path for the given package in graph G.
+    1) The shortest path is found for package
+    2) Generators yields current node and performs one actiob: v0,e1,v1,...,en,vn
+    3) If package cannot take a shortest path due to capacity of an edge
+        being to low, the edge is removed from the graph - G2, and shortest
+        path in G2 is being found
+    4) If no such path available or 5 attempts have been made to find such path
+        the package is waiting one round in the current vertice
+    5) When package arrives at the target, its success flag is set to true
+    """
     path = nx.shortest_path(G, source=package.source, target=package.target)
 
     yield_source = True
     edge_taken = False
+    attempts = 0
     step = 1
     
     while package.current != package.target:
@@ -22,7 +34,7 @@ def shortest_generator(G, package):
         current_edge = G[min(edge)][max(edge)]
 
         # Go through edge if capacity is enough
-        if current_edge["capacity"] >= current_edge["flow"] + package.size:
+        if current_edge["capacity"] > current_edge["flow"] + package.size:
             G.nodes[package.current]['color'] = "g"
 
             current_edge['flow'] += package.size
@@ -36,8 +48,13 @@ def shortest_generator(G, package):
         else:
             G_copy = G.copy()
             G_copy.remove_edge(*edge)
+            attempts += 1
 
             try:
+                # If more than 5 attempts than call no path found
+                if attempts >= 5:
+                    raise nx.NetworkXNoPath 
+
                 # Check for new path
                 new_path = nx.shortest_path(G_copy, source=package.current, target=package.target)
                 
@@ -51,9 +68,11 @@ def shortest_generator(G, package):
             except nx.NetworkXNoPath:
                 # If no new path than wait in current node
                 pass
-
+        
+        attempts = 0
         package.time += 1
         yield package.current
+
 
         # Reset edges color and flow if not waiting
         if edge_taken:

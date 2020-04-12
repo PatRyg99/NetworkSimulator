@@ -16,7 +16,7 @@ def generate(file_name, capacity_range):
                                         size=len(G.edges()))
     
     for i, (n1,n2) in enumerate(G.edges()):
-        G[n1][n2]['capacity'] = (G.degree[n1]+G.degree[n2])//2
+        G[n1][n2]['capacity'] = (G.degree[n1]+G.degree[n2])
         G[n1][n2]['flow'] = 0
         G[n1][n2]['color'] = "b"
 
