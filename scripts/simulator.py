@@ -34,6 +34,14 @@ class Simulator():
 
 
     def test(self, p = 90):
+        """
+        In place simulation with deterministic paths for each pair of vertices.
+        Method returns True when for all packages the path was able to be found.
+        Graph with flows is being drawn and infallibility counted.
+
+        Given parameter path tells what is a chance of graph not being damaged,
+        meaning probability of a failure of an edge.
+        """
         broken_package = None
 
         if random.randint(0,100) > p:

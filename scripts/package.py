@@ -8,7 +8,6 @@ class Package():
         self.source = source
         self.target = target
         
-        self.path_length = 0
         self.time = 0
         self.current = source
         self.success = self.current == self.target

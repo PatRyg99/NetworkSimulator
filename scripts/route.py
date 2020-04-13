@@ -4,7 +4,7 @@ def shortest_generator(G, package):
     """
     Generator of path for the given package in graph G.
     1) The shortest path is found for package
-    2) Generators yields current node and performs one actiob: v0,e1,v1,...,en,vn
+    2) Generators yields current node and performs one action: v0,e1,v1,...,en,vn
     3) If package cannot take a shortest path due to capacity of an edge
         being to low, the edge is removed from the graph - G2, and shortest
         path in G2 is being found
@@ -132,14 +132,12 @@ def shortest_weight_path(G, package):
     if attempts <= 0:
         return False
 
-    # Adding weight on the path
+    # Adding weight onto the path
     for i in range(1, len(path)):
         current_edge = G[path[i-1]][path[i]]
         current_edge["flow"] += package.size
         current_edge["weight"] = current_edge["flow"] / current_edge["capacity"]
         current_edge["color"] = "r"
         current_edge["packages"] += 1
-
-    package.path_length = len(path) - 1
     
     return True
