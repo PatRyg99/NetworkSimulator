@@ -1,4 +1,5 @@
 import time
+import copy
 from statistics import mean
 from random import shuffle
 from IPython.display import clear_output
@@ -29,7 +30,7 @@ class Simulator():
 
         return (1/g)*edge_sum
 
-    def run(self, timeout, timelapse = 1):
+    def run(self, timeout, timelapse = 1, reload_flag = False):
         """
         Runs simulation for simulator object.
         :param int timeout - how many rounds should the simulation take
@@ -43,6 +44,7 @@ class Simulator():
         timer = 0
         infallibilities = []
 
+        input_packages = copy.deepcopy(self.packages)
         package_routes = [(p,p.send(self.G)) for p in self.packages]
 
         while (False in [p.success for p in self.packages]) and timer < timeout: 
@@ -67,10 +69,19 @@ class Simulator():
             print("Timer: ", timer)
             time.sleep(timelapse)
 
+            if reload_flag:
+                reload_packages = copy.deepcopy(input_packages)
+                self.packages.extend(reload_packages)
+                package_routes.extend([(p,p.send(self.G)) for p in reload_packages])
+                
+                
+
 
         # Printing statistics
         print("\n"+pd.DataFrame(infallibilities, columns=["Timer","Infallibilty"]).to_string(index=False))
 
-        data = [[p.source, p.target, p.time, p.success, p.waited] for p in self.packages]
-        df = pd.DataFrame(data, columns=["Source", "Target", "Time", "Success", "Waited"])
-        print("\n"+df.to_string(index=False))
+        #data = [[p.source, p.target, p.time, p.success, p.waited] for p in self.packages]
+        #df = pd.DataFrame(data, columns=["Source", "Target", "Time", "Success", "Waited"])
+        #print("\n"+df.to_string(index=False))
+
+        print("Waited: ", self.packages.count(lambda x: x.waited == True))

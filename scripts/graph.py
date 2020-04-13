@@ -4,7 +4,7 @@ import pylab
 
 from networkx.drawing.nx_agraph import graphviz_layout
 
-def generate(file_name):
+def generate(file_name, capacity_param = 1):
     """
     Generates graph from the given file
     """
@@ -12,7 +12,7 @@ def generate(file_name):
     G = nx.from_numpy_array(edges_array)
     
     for i, (n1,n2) in enumerate(G.edges()):
-        G[n1][n2]['capacity'] = 2*(G.degree[n1]+G.degree[n2])
+        G[n1][n2]['capacity'] = capacity_param*(G.degree[n1]+G.degree[n2])
         G[n1][n2]['flow'] = 0
         G[n1][n2]['color'] = "b"
 
