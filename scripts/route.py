@@ -38,6 +38,7 @@ def shortest_generator(G, package):
         if current_edge["capacity"] > current_edge["flow"] + package.size:
             G.nodes[package.current]['color'] = "g"
 
+            current_edge['packages'] += 1
             current_edge['flow'] += package.size
             current_edge['color'] = "r"
 
@@ -95,3 +96,50 @@ def shortest_generator(G, package):
     G.nodes[package.current]['color'] = "g"
     package.success = True
     yield package.current
+
+
+def shortest_weight_path(G, package):
+    """
+    Algorithm that finds shortest weighted path for package.
+    Than all edges on the path are weighted by the given package's size.
+    """
+    unavailable = True
+    attempts = 10
+    G_copy = G.copy()
+
+    # Choosing shortest path with weight
+    while unavailable and attempts > 0:
+        unavailable = False
+
+        try:
+            path = nx.shortest_path(
+                G_copy, source=package.source, 
+                target=package.target,
+                weight = 'weight'
+            )
+        except nx.NetworkXNoPath:
+            return False
+
+        for i in range(1, len(path)):
+            if G[path[i-1]][path[i]]["capacity"] <= G[path[i-1]][path[i]]["flow"] + package.size:
+                unavailable = True
+                G_copy.remove_edge(path[i-1], path[i])
+                attempts -= 1
+                break
+
+
+    # No shortest path found
+    if attempts <= 0:
+        return False
+
+    # Adding weight on the path
+    for i in range(1, len(path)):
+        current_edge = G[path[i-1]][path[i]]
+        current_edge["flow"] += package.size
+        current_edge["weight"] = current_edge["flow"] / current_edge["capacity"]
+        current_edge["color"] = "r"
+        current_edge["packages"] += 1
+
+    package.path_length = len(path) - 1
+    
+    return True

@@ -15,6 +15,9 @@ def generate(file_name, capacity_param = 1):
         G[n1][n2]['capacity'] = capacity_param*(G.degree[n1]+G.degree[n2])
         G[n1][n2]['flow'] = 0
         G[n1][n2]['color'] = "b"
+        G[n1][n2]['weight'] = 0
+        G[n1][n2]['packages'] = 0
+        G[n1][n2]['failed'] = False
 
     for v in G.nodes():
         G.nodes[v]['color'] = "g"
@@ -44,5 +47,6 @@ def draw(G):
     print("Vertices: ", len(G.nodes()))
     print("Edges: ", len(G.edges()))
     print("Capacity: ", sum(G[n1][n2]["capacity"] for (n1,n2) in G.edges()))
+    print("Flow: ", sum(G[n1][n2]["flow"] for (n1,n2) in G.edges()))
     
     pylab.show()
