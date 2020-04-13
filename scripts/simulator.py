@@ -20,7 +20,7 @@ class Simulator():
         """
         Calculates infallibility of the graph, based on capacity and flows of the edges
         """
-        g = sum(map(lambda x: 1, filter(lambda x: x.success == False, self.packages)))
+        g = sum(1 for p in self.packages if p.success == False)
         size_mean = mean(p.size for p in self.packages if p.success == False)
         edge_sum = sum(
             self.G[n1][n2]['flow']/
@@ -30,7 +30,7 @@ class Simulator():
 
         return (1/g)*edge_sum
 
-    def run(self, timeout, timelapse = 1, reload_flag = False):
+    def run(self, timeout, timelapse = 1, reload_flag = False, draw = True):
         """
         Runs simulation for simulator object.
         :param int timeout - how many rounds should the simulation take
@@ -56,8 +56,9 @@ class Simulator():
                     next(route)
     
             # Print updated graph
-            clear_output(wait=True)
-            graph.draw(self.G)
+            if draw:
+                clear_output(wait=True)
+                graph.draw(self.G)
             rounds += 1
 
             # Incrementing timer and counting infallibility only on edge move
@@ -66,7 +67,9 @@ class Simulator():
                 infallibilities.append((timer, self.infallibility()))
 
 
-            print("Timer: ", timer)
+            if draw:
+                print("Timer: ", timer)
+
             time.sleep(timelapse)
 
             if reload_flag:
@@ -84,4 +87,4 @@ class Simulator():
         #df = pd.DataFrame(data, columns=["Source", "Target", "Time", "Success", "Waited"])
         #print("\n"+df.to_string(index=False))
 
-        print("Waited: ", self.packages.count(lambda x: x.waited == True))
+        print("Waited: ", sum(1 for p in self.packages if p.waited == True))
