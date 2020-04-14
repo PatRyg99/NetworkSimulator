@@ -8,6 +8,10 @@ from scripts.simulator import Simulator
 from scripts.package import Package, packages_from_matrix
 
 class Pipeline():
+    """
+    High level launcher, taking configuration and running all components to create and test the graph.
+    Utilizing strategy pattern to provide easy config switch.
+    """
     def __init__(self, topology, capacity_param, package_size, 
                     density, no_edge_failure, repeat, directory):
         self.topology = topology
@@ -46,6 +50,9 @@ class Pipeline():
 
 
     def preview(self):
+        """
+        Method running preview of configuration on one example, showing the graph itself.
+        """
         G = graph.generate(
             "topologies/"+self.topology+".txt", 
             capacity_param = self.capacity_param
