@@ -50,3 +50,14 @@ def draw(G):
     print("Flow: ", sum(G[n1][n2]["flow"] for (n1,n2) in G.edges()))
     
     pylab.show()
+
+def clear_simulation(G):
+    """
+    Clears simulation from the graph
+    """
+    for i, (n1,n2) in enumerate(G.edges()):
+        G[n1][n2]['flow'] = 0
+        G[n1][n2]['color'] = "b"
+        G[n1][n2]['weight'] = 0
+        G[n1][n2]['packages'] = 0
+        G[n1][n2]['failed'] = False

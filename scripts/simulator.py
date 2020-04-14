@@ -33,7 +33,23 @@ class Simulator():
         return (1/self.entire_capacity)*edge_sum
 
 
-    def test(self, p = 90):
+    def run_in_place_stats(self, p, repeat):
+        """
+        Runs run in place method "repeat" number of times.
+        Returns pandas dataframe with:
+            infallibility,
+            if edge broke,
+            if failure
+        """
+        stats = []
+        for _ in range(repeat):
+            stats.append(self.run_in_place(p=p, draw=False))
+            
+        df = pd.DataFrame(stats, columns=["infallibility", "edge_broke", "failure"])
+        return df
+
+
+    def run_in_place(self, p = 90, draw = True):
         """
         In place simulation with deterministic paths for each pair of vertices.
         Method returns True when for all packages the path was able to be found.
@@ -43,7 +59,9 @@ class Simulator():
         meaning probability of a failure of an edge.
         """
         broken_package = None
+        broken_edge = False
 
+        # Checking if edge to be broken
         if random.randint(0,100) > p:
             index = random.randint(0,len(self.G.edges())-1)
             edge = [e for i,e in enumerate(self.G.edges) if i == index]
@@ -52,25 +70,32 @@ class Simulator():
             self.G[min(*edge)][max(*edge)]['flow'] = self.G[min(*edge)][max(*edge)]['capacity']
             self.G[min(*edge)][max(*edge)]['color'] = "k"
 
+            broken_edge = True
+
+        # Finding paths for all packages
+        shuffle(self.packages)
         for package in self.packages:
             if not route.shortest_weight_path(self.G, package):
                 broken_package = package
                 break
+            
+        if draw:
+            graph.draw(self.G)
 
-        graph.draw(self.G)
+        infallibility = self.infallibility()
+        graph.clear_simulation(self.G)
 
+        # If no path for package invoke failure
         if broken_package:
-            print("Failure for package")
-            print("Source: ", broken_package.source)
-            print("Target: ", broken_package.target)
-            print("Size: ", broken_package.size)
+            if draw:
+                print("Failure for package")
+                print("Source: ", broken_package.source)
+                print("Target: ", broken_package.target)
+                print("Size: ", broken_package.size)
 
-            return False
+            return infallibility, broken_edge, True
 
-        else:
-            print("Infallibility: ", self.infallibility())
-
-        return True
+        return infallibility, broken_edge, False
 
 
 
