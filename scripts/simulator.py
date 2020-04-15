@@ -17,12 +17,12 @@ class Simulator():
     def __init__(self, G, packages):
         self.G = G
         self.packages = packages
-        self.entire_capacity = sum(p.size for p in self.packages)
+        self.entire_capacity = len(self.packages)
         self.mean_size = mean(p.size for p in self.packages)
 
-    def infallibility(self):
+    def delay(self):
         """
-        Calculates infallibility of the graph, based on capacity and flows of the edges
+        Calculates delay of package of the graph, based on capacity and flows of the edges
         """
         edge_sum = sum(
             self.G[n1][n2]['packages']/
@@ -37,7 +37,7 @@ class Simulator():
         """
         Runs run in place method "repeat" number of times.
         Returns pandas dataframe with:
-            infallibility,
+            delay,
             if edge broke,
             if failure
         """
@@ -45,7 +45,7 @@ class Simulator():
         for _ in range(repeat):
             stats.append(self.run_in_place(p=p, draw=False))
             
-        df = pd.DataFrame(stats, columns=["infallibility", "edge_broke", "failure"])
+        df = pd.DataFrame(stats, columns=["delay", "edge_broke", "failure"])
         return df
 
 
@@ -53,7 +53,7 @@ class Simulator():
         """
         In place simulation with deterministic paths for each pair of vertices.
         Method returns True when for all packages the path was able to be found.
-        Graph with flows is being drawn and infallibility counted.
+        Graph with flows is being drawn and delay counted.
 
         Given parameter path tells what is a chance of graph not being damaged,
         meaning probability of a failure of an edge.
@@ -82,7 +82,7 @@ class Simulator():
         if draw:
             graph.draw(self.G)
 
-        infallibility = self.infallibility()
+        delay = self.delay()
         graph.clear_simulation(self.G)
 
         # If no path for package invoke failure
@@ -93,9 +93,9 @@ class Simulator():
                 print("Target: ", broken_package.target)
                 print("Size: ", broken_package.size)
 
-            return infallibility, broken_edge, True
+            return delay, broken_edge, True
 
-        return infallibility, broken_edge, False
+        return delay, broken_edge, False
 
 
 
@@ -111,7 +111,7 @@ class Simulator():
         """
         rounds = 0
         timer = 0
-        infallibilities = []
+        delay = []
 
         input_packages = copy.deepcopy(self.packages)
         package_routes = [(p,p.send(self.G)) for p in self.packages]
@@ -130,10 +130,10 @@ class Simulator():
                 graph.draw(self.G)
             rounds += 1
 
-            # Incrementing timer and counting infallibility only on edge move
+            # Incrementing timer and counting delay only on edge move
             if rounds % 2 == 0 and (False in [p.success for p in self.packages]):
                 timer += 1
-                infallibilities.append((timer, self.infallibility()))
+                delay.append((timer, self.delay()))
 
                 reload_packages = copy.deepcopy(input_packages)
                 self.packages.extend(reload_packages)
@@ -145,7 +145,7 @@ class Simulator():
             time.sleep(timelapse)
                 
         # Printing statistics
-        print("\n"+pd.DataFrame(infallibilities, columns=["Timer","Infallibilty"]).to_string(index=False))
+        print("\n"+pd.DataFrame(delay, columns=["Timer","Delay"]).to_string(index=False))
 
         #data = [[p.source, p.target, p.time, p.success, p.waited] for p in self.packages]
         #df = pd.DataFrame(data, columns=["Source", "Target", "Time", "Success", "Waited"])

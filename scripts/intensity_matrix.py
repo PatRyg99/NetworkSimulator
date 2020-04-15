@@ -3,7 +3,7 @@ import itertools
 
 import numpy as np
 
-def generate(package_size, density, dim=20):
+def generate(density, max_packages, dim=20):
     """
     Function generating intesity matrix with given parametres
     :param list package_size - list with two value, 
@@ -26,10 +26,8 @@ def generate(package_size, density, dim=20):
                 vertices
             )
         ))
-        
-        size = random.randint(package_size[0], package_size[1])
 
-        matrix[source, target] = size
+        matrix[source, target] = random.randint(1, max_packages)
 
     return matrix
 

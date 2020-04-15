@@ -12,7 +12,10 @@ def generate(file_name, capacity_param = 1):
     G = nx.from_numpy_array(edges_array)
     
     for i, (n1,n2) in enumerate(G.edges()):
-        G[n1][n2]['capacity'] = capacity_param*(G.degree[n1]+G.degree[n2])
+        degree_max = max(G.degree[n1], G.degree[n2])
+        degree_min = min(G.degree[n1], G.degree[n2])
+
+        G[n1][n2]['capacity'] = capacity_param*(degree_max + degree_min + (degree_max - degree_min))
         G[n1][n2]['flow'] = 0
         G[n1][n2]['color'] = "b"
         G[n1][n2]['weight'] = 0

@@ -16,14 +16,14 @@ class Package():
     def send(self, G):
         return route.shortest_generator(G, self)
 
-def packages_from_matrix(intensity_matrix):
+def packages_from_matrix(intensity_matrix, avg_package_size):
     """
     Generates list of packages from a given intensity_matrix
     """
     packages = []
 
     for (x,y), value in np.ndenumerate(intensity_matrix):
-        if value != 0:
-            packages.append(Package(int(value), x, y))
+        for v in range(int(value)):
+            packages.append(Package(avg_package_size, x, y))
 
     return packages
